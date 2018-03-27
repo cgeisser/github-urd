@@ -52,24 +52,27 @@ func main() {
 	}
 
 	for _, repo := range allRepos {
+		if repo.GetPermissions()["admin"] == false {
+			continue
+		}
+
 		if *repo.HasIssues {
 			fmt.Printf("Turn off github issues for: %s. Current open issues: %d\n",
 				repo.GetFullName(),
 				repo.GetOpenIssuesCount())
 		}
-		if repo.GetPermissions()["admin"] == false {
-			continue
-		}
+
 		protection, _, err := client.Repositories.GetBranchProtection(ctx, repo.Owner.GetLogin(), repo.GetName(),
 			repo.GetDefaultBranch())
 		if err != nil {
 			fmt.Printf("%s %v\n", repo.GetName(), err)
 		} else {
 
-			if protection == nil || protection.RequiredStatusChecks == nil ||
-			protection.EnforceAdmins == nil ||
-			!(protection.RequiredStatusChecks.Strict &&
-				protection.EnforceAdmins.Enabled) {
+			if protection == nil || protection.GetRequiredStatusChecks() == nil ||
+				protection.GetEnforceAdmins() == nil ||
+				protection.GetRequiredPullRequestReviews() == nil ||
+				!(protection.RequiredStatusChecks.Strict &&
+					protection.EnforceAdmins.Enabled) {
 				fmt.Printf("Fix branch protection on: %s %s\n", *repo.FullName, *repo.DefaultBranch)
 			}
 		}
