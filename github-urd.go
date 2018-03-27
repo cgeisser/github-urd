@@ -56,7 +56,7 @@ func main() {
 			continue
 		}
 
-		if *repo.HasIssues {
+		if canTurnOffIssues(repo) {
 			fmt.Printf("Turn off github issues for: %s. Current open issues: %d\n",
 				repo.GetFullName(),
 				repo.GetOpenIssuesCount())
@@ -88,6 +88,13 @@ func main() {
 		}
 
 	}
+}
+
+func canTurnOffIssues(repo *github.Repository) bool {
+	if repo.GetHasIssues() && repo.GetOpenIssuesCount() == 0 {
+		return true
+	}
+	return false
 }
 
 func hasCodeClimate(hooks []*github.Hook) bool {
