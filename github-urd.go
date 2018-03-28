@@ -13,7 +13,8 @@ import (
 )
 
 var (
-	org = flag.String("org", "", "Organization in GitHub to audit.")
+	org        = flag.String("org", "", "Organization in GitHub to audit.")
+	use_issues = flag.Bool("use_issues", true, "Organization uses GitHub issues.")
 )
 
 func main() {
@@ -56,7 +57,7 @@ func main() {
 			continue
 		}
 
-		if canTurnOffIssues(repo) {
+		if canTurnOffIssues(*use_issues, repo) {
 			fmt.Printf("Turn off github issues for: %s. Current open issues: %d\n",
 				repo.GetFullName(),
 				repo.GetOpenIssuesCount())
@@ -90,8 +91,8 @@ func main() {
 	}
 }
 
-func canTurnOffIssues(repo *github.Repository) bool {
-	if repo.GetHasIssues() && repo.GetOpenIssuesCount() == 0 {
+func canTurnOffIssues(use_issues bool, repo *github.Repository) bool {
+	if !use_issues && repo.GetHasIssues() && repo.GetOpenIssuesCount() == 0 {
 		return true
 	}
 	return false
