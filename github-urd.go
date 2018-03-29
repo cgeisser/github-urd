@@ -85,7 +85,7 @@ func main() {
 			fmt.Printf("%v\n", err)
 		} else {
 			if repo.GetLanguage() != "" && !hasRequiredHook(*code_hook_string, hooks) {
-				fmt.Printf("Install %s on: %s\n", *code_hook_string, repo.GetFullName())
+				fmt.Printf("Install %s on: %s Private? %v\n", *code_hook_string, repo.GetFullName(), repo.GetPrivate())
 			}
 		}
 
