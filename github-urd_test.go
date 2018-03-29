@@ -24,3 +24,23 @@ func TestCanTurnOffIssues(t *testing.T) {
 		}
 	}
 }
+
+func TestHasRequiredHook(t *testing.T) {
+	var tests = []struct {
+		hook_string string
+		hooks       []*github.Hook
+		want        bool
+	}{
+		{"", []*github.Hook{}, true},
+		{"weasel", []*github.Hook{}, false},
+		{"weasel", []*github.Hook{&github.Hook{Active: github.Bool(false), URL: github.String("weasel")}}, false},
+		{"weasel", []*github.Hook{&github.Hook{Active: github.Bool(true), URL: github.String("weasel")}}, true},
+		{"weasel", []*github.Hook{&github.Hook{Active: github.Bool(false), URL: github.String("notit")}}, false},
+		{"weasel", []*github.Hook{&github.Hook{Active: github.Bool(true), URL: github.String("notit")}}, false},
+	}
+	for _, test := range tests {
+		if hasRequiredHook(test.hook_string, test.hooks) != test.want {
+			t.Errorf("hasRequiredHook on '%s' %v expected %v", test.hook_string, test.hooks, test.want)
+		}
+	}
+}

@@ -13,8 +13,9 @@ import (
 )
 
 var (
-	org        = flag.String("org", "", "Organization in GitHub to audit.")
-	use_issues = flag.Bool("use_issues", true, "Organization uses GitHub issues.")
+	org              = flag.String("org", "", "Organization in GitHub to audit.")
+	code_hook_string = flag.String("code_hook_string", "", "Hook string to search for on code repositories.")
+	use_issues       = flag.Bool("use_issues", true, "Organization uses GitHub issues.")
 )
 
 func main() {
@@ -83,8 +84,8 @@ func main() {
 		if err != nil {
 			fmt.Printf("%v\n", err)
 		} else {
-			if repo.GetLanguage() != "" && !repo.GetPrivate() && !hasCodeClimate(hooks) {
-				fmt.Printf("Install codeclimate on: %s\n", repo.GetFullName())
+			if repo.GetLanguage() != "" && !hasRequiredHook(*code_hook_string, hooks) {
+				fmt.Printf("Install %s on: %s\n", *code_hook_string, repo.GetFullName())
 			}
 		}
 
@@ -98,9 +99,12 @@ func canTurnOffIssues(use_issues bool, repo *github.Repository) bool {
 	return false
 }
 
-func hasCodeClimate(hooks []*github.Hook) bool {
+func hasRequiredHook(code_hook_string string, hooks []*github.Hook) bool {
+	if code_hook_string == "" {
+		return true
+	}
 	for _, hook := range hooks {
-		if strings.Contains(hook.String(), "codeclimate") && hook.GetActive() {
+		if strings.Contains(hook.String(), code_hook_string) && hook.GetActive() {
 			return true
 		}
 	}

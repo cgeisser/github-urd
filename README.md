@@ -17,4 +17,4 @@ This program checks for:
   - code review approval
   - branch staleness check
 - GitHub issues turned off via `--use_issues=false`
-- CodeClimate hook installed for anything that looks like source code.
+- Hook installed for anything that looks like source code via `--code_hook_string="name_of_thing"`
