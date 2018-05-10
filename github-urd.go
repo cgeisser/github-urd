@@ -54,7 +54,7 @@ func main() {
 	}
 
 	for _, repo := range allRepos {
-		if repo.GetPermissions()["admin"] == false {
+		if repo.GetPermissions()["admin"] == false || repo.GetArchived() == true {
 			continue
 		}
 
