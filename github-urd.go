@@ -15,7 +15,8 @@ import (
 var (
 	org              = flag.String("org", "", "Organization in GitHub to audit.")
 	code_hook_string = flag.String("code_hook_string", "", "Hook string to search for on code repositories.")
-	use_issues       = flag.Bool("use_issues", true, "Organization uses GitHub issues.")
+	use_issues       = flag.Bool("use_issues", true, "Organization uses GitHub issues (and projects).")
+	use_wiki         = flag.Bool("use_wiki", true, "Organization uses GitHub wiki.")
 )
 
 func main() {
@@ -64,6 +65,11 @@ func main() {
 				repo.GetOpenIssuesCount())
 		}
 
+		if canTurnOffWiki(*use_wiki, repo) {
+			fmt.Printf("Turn off github wiki for: %s.",
+				repo.GetFullName())
+		}
+
 		protection, _, err := client.Repositories.GetBranchProtection(ctx, repo.Owner.GetLogin(), repo.GetName(),
 			repo.GetDefaultBranch())
 		if err != nil {
@@ -93,7 +99,15 @@ func main() {
 }
 
 func canTurnOffIssues(use_issues bool, repo *github.Repository) bool {
-	if !use_issues && repo.GetHasIssues() && repo.GetOpenIssuesCount() == 0 {
+	if !use_issues &&
+		(repo.GetHasIssues() || repo.GetHasProjects()) && repo.GetOpenIssuesCount() == 0 {
+		return true
+	}
+	return false
+}
+
+func canTurnOffWiki(use_wiki bool, repo *github.Repository) bool {
+	if !use_wiki && repo.GetHasWiki() {
 		return true
 	}
 	return false
