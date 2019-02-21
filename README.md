@@ -1,5 +1,4 @@
-# github-urd [![Build Status](https://travis-ci.org/cgeisser/github-urd.svg?branch=master)](https://travis-ci.org/cgeisser/github-urd)
-
+# github-urd 
 `urd` stands for Use Reasonable Defaults.
 
 The goal of this tool is to enforce a standard GitHub configuration across many repositories.
